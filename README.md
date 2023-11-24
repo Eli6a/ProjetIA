@@ -4,7 +4,7 @@ Place tiles to connect your two borders of the board. Play against an AI, implem
 
 ## Dependencies
 
-`pip install -r requirements`
+`pip install -r requirements.txt`
 
 
 ## Run the program
