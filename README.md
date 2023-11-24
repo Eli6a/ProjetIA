@@ -11,6 +11,8 @@ Place tiles to connect your two borders of the board. Play against an AI, implem
 
 ```
 $ python main.py -h
+ou
+$ py main.py -h
 
 usage: main.py [-h] [--size SIZE] [--games GAMES] [--no-ui] [--player {human,random,minimax}] [--other {human,random,minimax}]
 
