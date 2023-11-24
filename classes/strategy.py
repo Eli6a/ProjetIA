@@ -53,9 +53,50 @@ class Node(object):
 
 class Random(PlayerStrat):
     # Build here the class for a random player
+    def start(self):
+        possible_moves = logic.get_possible_moves(self.root_state)
+        move = random.choice(possible_moves)
+        return move
 
 class MiniMax(PlayerStrat):
     # Build here the class implementing the MiniMax strategy
+    def start(self):
+        depth = 3
+        node = Node(self.root_state)
+        node.children = logic.get_possible_moves(self.root_state)
+        
+        v = -inf
+        alpha = -inf
+        beta = inf
+        moveToDo = None
+        
+        # cas l'adversaire gagne : le noeud prend la valeur -1 et on ne génère pas la suite de l'arbre/enfants
+        # cas on gagne : le noeud prend la valeur 1 
+        # sinon, le noeud prend une valeur entre 0 et 1 (exclus)
+        
+        move = self.minimax(node, depth, True)
+        
+    def minimax(self, node, depth, maximizingPlayer):
+        if depth == 0 or logic.is_game_over(self.player, self.root_state):
+            return node
+        
+        if maximizingPlayer:
+            value = -inf
+            for child in node.children:
+                value = max(value, self.minimax(child, depth - 1, False))       
+        else:
+            value = inf
+            for child in node.children:
+                value = min(value, self.minimax(child, depth - 1, True))
+        
+        return value
+    
+    def max_value(self, state, alpha, beta):
+        
+        return
+    
+    pass
+        
 
 str2strat: dict[str, PlayerStrat] = {
         "human": None,
