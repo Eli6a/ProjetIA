@@ -61,10 +61,9 @@ class Random(PlayerStrat):
 class MiniMax(PlayerStrat):
     # Build here the class implementing the MiniMax strategy
     def start(self):
-        depth = 3
         node = Node(self.root_state)
-        node.children = logic.get_possible_moves(self.root_state)
         
+        depth = 2
         v = -inf
         alpha = -inf
         beta = inf
@@ -74,29 +73,94 @@ class MiniMax(PlayerStrat):
         # cas on gagne : le noeud prend la valeur 1 
         # sinon, le noeud prend une valeur entre 0 et 1 (exclus)
         
-        move = self.minimax(node, depth, True)
+        node.move = self.minimax(node, depth, True)
+        return node.move
         
-    def minimax(self, node, depth, maximizingPlayer):
-        if depth == 0 or logic.is_game_over(self.player, self.root_state):
-            return node
-        
-        if maximizingPlayer:
-            value = -inf
-            for child in node.children:
-                value = max(value, self.minimax(child, depth - 1, False))       
-        else:
-            value = inf
-            for child in node.children:
-                value = min(value, self.minimax(child, depth - 1, True))
-        
-        return value
+    def minimax(self, node, depth, maximizingAI):
+        list = logic.get_possible_moves(node.state)
+        value, move = self.max_value(node.state, depth, node, -inf, inf, True)
+        print(move)
+        return move
     
-    def max_value(self, state, alpha, beta):
+    def max_value(self, state, depth, node, alpha, beta, maximizingAI):
+        if depth == 0 :
+            return 0, node.move
+        elif (logic.is_game_over(playerNb, node.state) and not maximizingAI) :
+            return -1, node.move
+        elif (logic.is_game_over(minimaxNb, node.state) and maximizingAI):   
+            return 1, node.move
+            
+            
+            
+            if (maximizingAI):
+                print("max : Je suis ia :", self.player, " " , maximizingAI)
+                return 1, node.move
+            elif (logic.is_game_over(self.player, node.state) is None):
+                print("max : Je suis ia :", self.player, " " , maximizingAI)
+                return 0, (node.move)
+            else:
+                print("max : Je suis ia :", self.player, " " , maximizingAI)
+                return 1, node.move
         
-        return
-    
-    pass
+        v = -inf
+        a1 = (-1, -1)
         
+        list = logic.get_possible_moves(node.state)
+        for element in list:
+            copyState = copy.deepcopy(node.state)
+            
+            if (self.player == 1):
+                copyState[element[0]][element[1]] = 1
+            else:
+                copyState[element[0]][element[1]] = 2
+            
+            child = Node(copyState, element) 
+            node.add_child(child)
+        
+        for child in node.children:
+            print(child.state)
+            v2, a2 = self.min_value(child.state, depth - 1, child, alpha, beta, not maximizingAI)
+            if v2 > v:
+                v, a1 = v2, a2  
+                if (v2 != 0):
+                    print(a2)
+        return v, a1
+        
+    def min_value(self, state, depth, node, alpha, beta, maximizingAI):
+        
+        if depth == 0 :
+            return 0, node.move
+        elif (logic.is_game_over(playerNb, node.state) and not maximizingAI) :
+            return 1, node.move
+        elif (logic.is_game_over(minimaxNb, node.state) and maximizingAI):    
+            return -1, node.move
+        
+        v = +inf
+        a1 = (-1, -1)
+        
+        list = logic.get_possible_moves(node.state)
+        for element in list:
+            copyState = copy.deepcopy(node.state)
+            
+            if (self.player == 1):
+                copyState[element[0]][element[1]] = 1
+            else:
+                copyState[element[0]][element[1]] = 2
+            
+            child = Node(copyState, element) 
+            node.add_child(child)
+            
+        for child in node.children:
+            v2, a2 = self.max_value(child.state, depth - 1, child, alpha, beta, not maximizingAI)
+            if v2 < v:
+                v, a1 = v2, a2
+                if (v2 != 0):
+                    print(a2)
+
+        return v, a1
+playerNb = 0
+randomNb = 1
+minimaxNb = 2   
 
 str2strat: dict[str, PlayerStrat] = {
         "human": None,
