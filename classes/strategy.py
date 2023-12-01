@@ -36,7 +36,7 @@ class Node(object):
     untried moves, etc...
     """
     def __init__(self, board, move=(None, None),
-                 wins=0, visits=0, children=None):
+                 wins=0, visits=0, children=None, player=2):
         # Save the #wins:#visited ratio
         self.state = board
         self.move = move
@@ -45,6 +45,8 @@ class Node(object):
         self.children = children or []
         self.parent = None
         self.untried_moves = logic.get_possible_moves(board)
+        
+        self.player = player
 
     def add_child(self, child):
         child.parent = self
@@ -61,7 +63,7 @@ class Random(PlayerStrat):
 class MiniMax(PlayerStrat):
     # Build here the class implementing the MiniMax strategy
     def start(self):
-        node = Node(self.root_state)
+        node = Node(self.root_state, player=self.player)
         
         depth = 2
         v = -inf
@@ -73,34 +75,34 @@ class MiniMax(PlayerStrat):
         # cas on gagne : le noeud prend la valeur 1 
         # sinon, le noeud prend une valeur entre 0 et 1 (exclus)
         
-        node.move = self.minimax(node, depth, True)
+        node.move = self.minimax(node)
         return node.move
         
-    def minimax(self, node, depth, maximizingAI):
+    def minimax(self, node):
+        
+        
+        if (node.player == logic.BLACK_PLAYER):
+            print("noir")
+        else:
+            print("blanc")
         list = logic.get_possible_moves(node.state)
-        value, move = self.max_value(node.state, depth, node, -inf, inf, True)
-        print(move)
+        if (len(list) > 14):
+            return random.choice(list)
+        value, move = self.max_value(node.state, node, -inf, inf)
+        print(node.state)
         return move
     
-    def max_value(self, state, depth, node, alpha, beta, maximizingAI):
-        if depth == 0 :
-            return 0, node.move
-        elif (logic.is_game_over(playerNb, node.state) and not maximizingAI) :
-            return -1, node.move
-        elif (logic.is_game_over(minimaxNb, node.state) and maximizingAI):   
-            return 1, node.move
-            
-            
-            
-            if (maximizingAI):
-                print("max : Je suis ia :", self.player, " " , maximizingAI)
+    def max_value(self, state, node, alpha, beta):
+        if (logic.is_game_over(logic.BLACK_PLAYER, node.state) == logic.BLACK_PLAYER) :
+            if (node.player == logic.BLACK_PLAYER):
                 return 1, node.move
-            elif (logic.is_game_over(self.player, node.state) is None):
-                print("max : Je suis ia :", self.player, " " , maximizingAI)
-                return 0, (node.move)
             else:
-                print("max : Je suis ia :", self.player, " " , maximizingAI)
+                return -1, node.move            
+        elif (logic.is_game_over(logic.WHITE_PLAYER, node.state) == logic.WHITE_PLAYER) :
+            if (node.player == logic.WHITE_PLAYER):
                 return 1, node.move
+            else:
+                return -1, node.move  
         
         v = -inf
         a1 = (-1, -1)
@@ -118,22 +120,22 @@ class MiniMax(PlayerStrat):
             node.add_child(child)
         
         for child in node.children:
-            print(child.state)
-            v2, a2 = self.min_value(child.state, depth - 1, child, alpha, beta, not maximizingAI)
+            v2, a2 = self.min_value(child.state, child, alpha, beta)
             if v2 > v:
                 v, a1 = v2, a2  
-                if (v2 != 0):
-                    print(a2)
         return v, a1
         
-    def min_value(self, state, depth, node, alpha, beta, maximizingAI):
-        
-        if depth == 0 :
-            return 0, node.move
-        elif (logic.is_game_over(playerNb, node.state) and not maximizingAI) :
-            return 1, node.move
-        elif (logic.is_game_over(minimaxNb, node.state) and maximizingAI):    
-            return -1, node.move
+    def min_value(self, state, node, alpha, beta):
+        if (logic.is_game_over(logic.BLACK_PLAYER, node.state) == logic.BLACK_PLAYER) :
+            if (node.player == logic.BLACK_PLAYER):
+                return 1, node.move
+            else:
+                return -1, node.move            
+        elif (logic.is_game_over(logic.WHITE_PLAYER, node.state) == logic.WHITE_PLAYER) :
+            if (node.player == logic.WHITE_PLAYER):
+                return 1, node.move
+            else:
+                return -1, node.move 
         
         v = +inf
         a1 = (-1, -1)
@@ -151,16 +153,11 @@ class MiniMax(PlayerStrat):
             node.add_child(child)
             
         for child in node.children:
-            v2, a2 = self.max_value(child.state, depth - 1, child, alpha, beta, not maximizingAI)
+            v2, a2 = self.max_value(child.state, child, alpha, beta)
             if v2 < v:
                 v, a1 = v2, a2
-                if (v2 != 0):
-                    print(a2)
 
         return v, a1
-playerNb = 0
-randomNb = 1
-minimaxNb = 2   
 
 str2strat: dict[str, PlayerStrat] = {
         "human": None,
