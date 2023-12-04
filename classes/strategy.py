@@ -80,7 +80,6 @@ class MiniMax(PlayerStrat):
         
     def minimax(self, node):
         
-        
         if (node.player == logic.BLACK_PLAYER):
             print("noir")
         else:
@@ -89,7 +88,6 @@ class MiniMax(PlayerStrat):
         if (len(list) > 14):
             return random.choice(list)
         value, move = self.max_value(node.state, node, -inf, inf)
-        print(node.state)
         return move
     
     def max_value(self, state, node, alpha, beta):
@@ -100,62 +98,77 @@ class MiniMax(PlayerStrat):
                 return -1, node.move            
         elif (logic.is_game_over(logic.WHITE_PLAYER, node.state) == logic.WHITE_PLAYER) :
             if (node.player == logic.WHITE_PLAYER):
-                return 1, node.move
+                return 2, node.move
             else:
-                return -1, node.move  
+                return -2, node.move  
         
         v = -inf
         a1 = (-1, -1)
         
         list = logic.get_possible_moves(node.state)
+            
         for element in list:
             copyState = copy.deepcopy(node.state)
             
-            if (self.player == 1):
-                copyState[element[0]][element[1]] = 1
+            child = Node
+
+            if (node.player == logic.WHITE_PLAYER):
+                copyState[element[0]][element[1]] = logic.WHITE_PLAYER
+                child = Node(copyState, element, player=logic.BLACK_PLAYER)
             else:
-                copyState[element[0]][element[1]] = 2
-            
-            child = Node(copyState, element) 
+                copyState[element[0]][element[1]] = logic.BLACK_PLAYER
+                child = Node(copyState, element, player=logic.WHITE_PLAYER)
+                
             node.add_child(child)
         
         for child in node.children:
             v2, a2 = self.min_value(child.state, child, alpha, beta)
             if v2 > v:
                 v, a1 = v2, a2  
+                alpha = max(alpha, v)
+            if (v >= beta):
+                return v, a1
         return v, a1
         
     def min_value(self, state, node, alpha, beta):
         if (logic.is_game_over(logic.BLACK_PLAYER, node.state) == logic.BLACK_PLAYER) :
             if (node.player == logic.BLACK_PLAYER):
-                return 1, node.move
+                return 2, node.move
             else:
-                return -1, node.move            
+                return -2, node.move            
         elif (logic.is_game_over(logic.WHITE_PLAYER, node.state) == logic.WHITE_PLAYER) :
             if (node.player == logic.WHITE_PLAYER):
-                return 1, node.move
+                return 2, node.move
             else:
-                return -1, node.move 
+                return -2, node.move 
         
         v = +inf
         a1 = (-1, -1)
         
         list = logic.get_possible_moves(node.state)
+            
         for element in list:
             copyState = copy.deepcopy(node.state)
             
-            if (self.player == 1):
-                copyState[element[0]][element[1]] = 1
+            child = Node
+
+            if (node.player == logic.WHITE_PLAYER):
+                copyState[element[0]][element[1]] = logic.WHITE_PLAYER
+                child = Node(copyState, element, player=logic.BLACK_PLAYER)
             else:
-                copyState[element[0]][element[1]] = 2
-            
-            child = Node(copyState, element) 
+                copyState[element[0]][element[1]] = logic.WHITE_PLAYER
+                child = Node(copyState, element, player=logic.WHITE_PLAYER)
+                
             node.add_child(child)
             
         for child in node.children:
             v2, a2 = self.max_value(child.state, child, alpha, beta)
             if v2 < v:
                 v, a1 = v2, a2
+                beta = min(beta, v)
+                
+                if (v <= alpha):
+                    return v, a1
 
         return v, a1
 
