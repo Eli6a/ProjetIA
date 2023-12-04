@@ -51,6 +51,23 @@ class Node(object):
     def add_child(self, child):
         child.parent = self
         self.children.append(child)
+        
+    def add_children(self):
+        list = logic.get_possible_moves(self.state)
+            
+        for element in list:
+            copyState = copy.deepcopy(self.state)
+            
+            child = Node
+
+            if (self.player == logic.WHITE_PLAYER):
+                copyState[element[0]][element[1]] = logic.WHITE_PLAYER
+                child = Node(copyState, element, player=logic.BLACK_PLAYER)
+            else:
+                copyState[element[0]][element[1]] = logic.BLACK_PLAYER
+                child = Node(copyState, element, player=logic.WHITE_PLAYER)
+                
+            self.add_child(child)
 
 
 class Random(PlayerStrat):
@@ -105,21 +122,7 @@ class MiniMax(PlayerStrat):
         v = -inf
         a1 = (-1, -1)
         
-        list = logic.get_possible_moves(node.state)
-            
-        for element in list:
-            copyState = copy.deepcopy(node.state)
-            
-            child = Node
-
-            if (node.player == logic.WHITE_PLAYER):
-                copyState[element[0]][element[1]] = logic.WHITE_PLAYER
-                child = Node(copyState, element, player=logic.BLACK_PLAYER)
-            else:
-                copyState[element[0]][element[1]] = logic.BLACK_PLAYER
-                child = Node(copyState, element, player=logic.WHITE_PLAYER)
-                
-            node.add_child(child)
+        node.add_children()
         
         for child in node.children:
             v2, a2 = self.min_value(child.state, child, alpha, beta)
@@ -145,21 +148,9 @@ class MiniMax(PlayerStrat):
         v = +inf
         a1 = (-1, -1)
         
-        list = logic.get_possible_moves(node.state)
-            
-        for element in list:
-            copyState = copy.deepcopy(node.state)
-            
-            child = Node
-
-            if (node.player == logic.WHITE_PLAYER):
-                copyState[element[0]][element[1]] = logic.WHITE_PLAYER
-                child = Node(copyState, element, player=logic.BLACK_PLAYER)
-            else:
-                copyState[element[0]][element[1]] = logic.WHITE_PLAYER
-                child = Node(copyState, element, player=logic.WHITE_PLAYER)
-                
-            node.add_child(child)
+        list = logic.get_possible_moves(node.state)   
+        
+        node.add_children()
             
         for child in node.children:
             v2, a2 = self.max_value(child.state, child, alpha, beta)
