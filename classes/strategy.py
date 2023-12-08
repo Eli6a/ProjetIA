@@ -19,6 +19,7 @@ class PlayerStrat:
     def __init__(self, _board_state, player):
         self.root_state = _board_state
         self.player = player
+        print(self.root_state)
 
     def start(self):
         """
@@ -82,28 +83,22 @@ class MiniMax(PlayerStrat):
     def start(self):
         node = Node(self.root_state, player=self.player)
         
-        depth = 3
+        if (len(node.untried_moves) > 14):
+            print("random")
+            possible_moves = logic.get_possible_moves(self.root_state)
+            move = random.choice(possible_moves)
+            return move
+
+        depth = len(self.root_state) * 3
+        print(depth)
         v = -inf
         alpha = -inf
         beta = inf
-        moveToDo = None
-        
-        # cas l'adversaire gagne : le noeud prend la valeur -1 et on ne génère pas la suite de l'arbre/enfants
-        # cas on gagne : le noeud prend la valeur 1 
-        # sinon, le noeud prend une valeur entre 0 et 1 (exclus)
-        
         node.move = self.minimax(node, depth)
         return node.move
         
     def minimax(self, node, depth):
-        
-        if (node.player == logic.BLACK_PLAYER):
-            print("noir")
-        else:
-            print("blanc")
-        list = logic.get_possible_moves(node.state)
-        if (len(list) > 14):
-            return random.choice(list)
+            
         value, move = self.max_value(node.state, node, -inf, inf, depth)
         return move
     
@@ -112,8 +107,8 @@ class MiniMax(PlayerStrat):
         if (haveWinner):
             return value, move
             
-        #if (depth == 0):
-        #    self.evaluate()
+        if (depth == 0):
+            return self.evaluate(node)
         
         v = -inf
         a1 = (-1, -1)
@@ -134,8 +129,8 @@ class MiniMax(PlayerStrat):
         if (haveWinner):
             return value, move
             
-        #if (depth == 0):
-        #    self.evaluate()
+        if (depth == 0):
+            return self.evaluate(node)
             
         v = +inf
         a1 = (-1, -1)
@@ -154,26 +149,26 @@ class MiniMax(PlayerStrat):
     
     def haveWinner(self, node):
         if (logic.is_game_over(logic.BLACK_PLAYER, node.state) == logic.BLACK_PLAYER) :
-            if (node.player == logic.BLACK_PLAYER):
-                return True, 1, node.move
+            if (self.player != logic.BLACK_PLAYER):
+                return True, 200, node.move
             else:
-                return True, -1, node.move            
+                return True, -200, node.move            
         elif (logic.is_game_over(logic.WHITE_PLAYER, node.state) == logic.WHITE_PLAYER) :
-            if (node.player == logic.WHITE_PLAYER):
-                return True, 1, node.move
+            if (self.player != logic.WHITE_PLAYER):
+                return True, 200, node.move
             else:
-                return True, -1, node.move   
+                return True, -200, node.move   
         else :
             return False, 0, node.move
         
     
-    def evaluate(self, node, depth):
-        haveWinner, value, move = self.haveWinner(node)
-        if (haveWinner):
-            return value*200, move
-        
-        
-        return 0
+    def evaluate(self, node):
+        print("evaluate")
+        one_third = math.floor(len(node.move)/3)-1        
+        if (node.move[0] <= one_third or node.move[0] >= len(node.move) - one_third):
+            return 0.5, node.move
+        else :
+            return 9, node.move
 
 str2strat: dict[str, PlayerStrat] = {
         "human": None,
