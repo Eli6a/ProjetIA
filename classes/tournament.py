@@ -50,13 +50,13 @@ class Tournament:
                     black_starts=black_starts, 
                     strat=self.STRAT,
                     use_ui=self.USE_UI)
-        game.print_game_info(
-            [self.BOARD_SIZE, self.STRAT, self.GAME_COUNT]
-        )
+        # game.print_game_info(
+        #     [self.BOARD_SIZE, self.STRAT, self.GAME_COUNT]
+        # )
         while game.winner is None:
             game.play()
 
-        print(f"{player2str[game.winner]} player ({self.STRAT[game.winner-1]}) wins!")
+        # print(f"{player2str[game.winner]} player ({self.STRAT[game.winner-1]}) wins!")
 
         return game.winner
 
@@ -81,5 +81,17 @@ class Tournament:
 
         # TODO Design your own evaluation measure!
         # https://pyformat.info/
-        log.info("Design your own evaluation measure!")
+        # log.info("Design your own evaluation measure!")
         print(scores)
+        print(self.STRAT[0], " ; ", self.STRAT[1], " ; ", self.BOARD_SIZE, " ; ", (scores [0] / (scores [0] + scores[1])) * 100, "% ; ")
+        
+        
+    def heatmap(self):
+        raise NotImplementedError
+        # df = read_csv("heatmap.csv")
+        # matrix = df.pivot_table(values="%win",
+        #                         index = "IA1",
+        #                         columns = "IA2")
+        # import seaborn as sns
+        # sns.heatmap(matrix)
+        # plt.show()

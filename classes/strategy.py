@@ -19,7 +19,6 @@ class PlayerStrat:
     def __init__(self, _board_state, player):
         self.root_state = _board_state
         self.player = player
-        print(self.root_state)
 
     def start(self):
         """
@@ -83,14 +82,17 @@ class MiniMax(PlayerStrat):
     def start(self):
         node = Node(self.root_state, player=self.player)
         
+        depth = 0
+        
         if (len(node.untried_moves) > 14):
-            print("random")
             possible_moves = logic.get_possible_moves(self.root_state)
             move = random.choice(possible_moves)
             return move
-
-        depth = len(self.root_state) * 3
-        print(depth)
+        elif (len(node.untried_moves) > 10):
+            depth = 4
+        else :
+            depth = 7
+            
         v = -inf
         alpha = -inf
         beta = inf
@@ -99,10 +101,10 @@ class MiniMax(PlayerStrat):
         
     def minimax(self, node, depth):
             
-        value, move = self.max_value(node.state, node, -inf, inf, depth)
+        value, move = self.max_value(node, -inf, inf, depth)
         return move
     
-    def max_value(self, state, node, alpha, beta, depth):
+    def max_value(self, node, alpha, beta, depth):
         haveWinner, value, move = self.haveWinner(node)
         if (haveWinner):
             return value, move
@@ -116,7 +118,7 @@ class MiniMax(PlayerStrat):
         node.add_children()
         
         for child in node.children:
-            v2, a2 = self.min_value(child.state, child, alpha, beta, depth-1)
+            v2, a2 = self.min_value(child, alpha, beta, depth-1)
             if v2 > v:
                 v, a1 = v2, a2  
                 alpha = max(alpha, v)
@@ -124,21 +126,21 @@ class MiniMax(PlayerStrat):
                 return v, a1
         return v, a1
         
-    def min_value(self, state, node, alpha, beta, depth):
+    def min_value(self, node, alpha, beta, depth):
         haveWinner, value, move = self.haveWinner(node)
         if (haveWinner):
             return value, move
             
         if (depth == 0):
             return self.evaluate(node)
-            
+         
         v = +inf
         a1 = (-1, -1)
                 
         node.add_children()
             
         for child in node.children:
-            v2, a2 = self.max_value(child.state, child, alpha, beta, depth-1)
+            v2, a2 = self.max_value(child, alpha, beta, depth-1)
             if v2 < v:
                 v, a1 = v2, a2
                 beta = min(beta, v)
@@ -163,11 +165,10 @@ class MiniMax(PlayerStrat):
         
     
     def evaluate(self, node):
-        print("evaluate")
-        one_third = math.floor(len(node.move)/3)-1        
-        if (node.move[0] <= one_third or node.move[0] >= len(node.move) - one_third):
-            return 0.5, node.move
-        else :
+        one_third = len(node.state) // 3
+        if (node.move[0] <= one_third or node.move[0] >= len(node.state) - one_third):
+            return 1, node.move
+        else:
             return 9, node.move
 
 str2strat: dict[str, PlayerStrat] = {
