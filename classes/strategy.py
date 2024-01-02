@@ -77,7 +77,7 @@ class Random(PlayerStrat):
         possible_moves = logic.get_possible_moves(self.root_state)
         move = random.choice(possible_moves)
         return move
-
+    
 class MiniMax(PlayerStrat):
     # Build here the class implementing the MiniMax strategy
     def start(self):
@@ -88,18 +88,108 @@ class MiniMax(PlayerStrat):
             possible_moves = logic.get_possible_moves(self.root_state)
             move = random.choice(possible_moves)
             return move
+<<<<<<< Updated upstream
 
         depth = len(self.root_state) * 3
         print(depth)
         v = -inf
         alpha = -inf
         beta = inf
+=======
+        elif (len(node.untried_moves) > 10):
+            depth = 4
+        else :
+            depth = 7
+            
+>>>>>>> Stashed changes
         node.move = self.minimax(node, depth)
         return node.move
         
     def minimax(self, node, depth):
+        alpha = -inf
+        beta = inf
+        value, move = self.max_value(node, alpha, beta, depth)
+        return move
+    
+    def max_value(self, node, alpha, beta, depth):
+        haveWinner, value, move = self.haveWinner(node)
+        if (haveWinner):
+            return value, move
+        
+        v = -inf
+        a1 = (-1, -1)
+        
+        node.add_children()
+        
+        for child in node.children:
+            v2, a2 = self.min_value(child, alpha, beta, depth-1)
+            if v2 > v:
+                v, a1 = v2, a2  
+                alpha = max(alpha, v)
+            if (v >= beta):
+                return v, a1
+        return v, a1
+        
+    def min_value(self, node, alpha, beta, depth):
+        haveWinner, value, move = self.haveWinner(node)
+        if (haveWinner):
+            return value, move
+        
+        v = +inf
+        a1 = (-1, -1)
+                
+        node.add_children()
             
+<<<<<<< Updated upstream
         value, move = self.max_value(node.state, node, -inf, inf, depth)
+=======
+        for child in node.children:
+            v2, a2 = self.max_value(child, alpha, beta, depth-1)
+            if v2 < v:
+                v, a1 = v2, a2
+                beta = min(beta, v)
+                if (v <= alpha):
+                    return v, a1
+
+        return v, a1
+    
+    def haveWinner(self, node):
+        if (logic.is_game_over(logic.BLACK_PLAYER, node.state) == logic.BLACK_PLAYER) :
+            if (self.player != logic.BLACK_PLAYER):
+                return True, 200, node.move
+            else:
+                return True, -200, node.move            
+        elif (logic.is_game_over(logic.WHITE_PLAYER, node.state) == logic.WHITE_PLAYER) :
+            if (self.player != logic.WHITE_PLAYER):
+                return True, 200, node.move
+            else:
+                return True, -200, node.move   
+        else :
+            return False, 0, node.move
+
+class Evaluate(PlayerStrat):
+    # Build here the class implementing the MiniMax strategy
+    def start(self):
+        node = Node(self.root_state, player=self.player)
+        
+        depth = 0
+        
+        if (len(node.untried_moves) > 14):
+            possible_moves = logic.get_possible_moves(self.root_state)
+            move = random.choice(possible_moves)
+            return move
+        elif (len(node.untried_moves) > 10):
+            depth = 4
+        else :
+            depth = 7
+        node.move = self.minimax(node, depth)
+        return node.move
+        
+    def minimax(self, node, depth):
+        alpha = -inf
+        beta = inf
+        value, move = self.max_value(node, alpha, beta, depth)
+>>>>>>> Stashed changes
         return move
     
     def max_value(self, state, node, alpha, beta, depth):
@@ -174,4 +264,5 @@ str2strat: dict[str, PlayerStrat] = {
         "human": None,
         "random": Random,
         "minimax": MiniMax,
+        "evaluate": Evaluate,
 }

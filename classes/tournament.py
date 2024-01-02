@@ -81,5 +81,22 @@ class Tournament:
 
         # TODO Design your own evaluation measure!
         # https://pyformat.info/
+<<<<<<< Updated upstream
         log.info("Design your own evaluation measure!")
         print(scores)
+=======
+        # log.info("Design your own evaluation measure!")
+        print(scores)
+        print(self.STRAT[0], "|", self.STRAT[1], "| board : ", self.BOARD_SIZE, "|", (scores [0] / (scores [0] + scores[1])) * 100, "% win ")
+        
+        
+    def heatmap(self):
+        raise NotImplementedError
+        # df = read_csv("heatmap.csv")
+        # matrix = df.pivot_table(values="%win",
+        #                         index = "IA1",
+        #                         columns = "IA2")
+        # import seaborn as sns
+        # sns.heatmap(matrix)
+        # plt.show()
+>>>>>>> Stashed changes
