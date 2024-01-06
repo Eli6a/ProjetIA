@@ -54,18 +54,20 @@ class Node(object):
         
     def add_children(self):
         list = logic.get_possible_moves(self.state)
+        
+        childPlayer = 0
+        
+        if (self.player == logic.WHITE_PLAYER):
+            childPlayer=logic.BLACK_PLAYER
+        else:
+            childPlayer=logic.WHITE_PLAYER
             
         for element in list:
             copyState = copy.deepcopy(self.state)
             
             child = Node
-
-            if (self.player == logic.WHITE_PLAYER):
-                copyState[element[0]][element[1]] = logic.WHITE_PLAYER
-                child = Node(copyState, element, player=logic.BLACK_PLAYER)
-            else:
-                copyState[element[0]][element[1]] = logic.BLACK_PLAYER
-                child = Node(copyState, element, player=logic.WHITE_PLAYER)
+            copyState[element[0]][element[1]] = self.player
+            child = Node(copyState, element, player=childPlayer)
                 
             self.add_child(child)
 
@@ -81,28 +83,23 @@ class MiniMax(PlayerStrat):
     # Build here the class implementing the MiniMax strategy
     def start(self):
         node = Node(self.root_state, player=self.player)
-        
-        depth = 0
-        
+                
         if (len(node.untried_moves) > 14):
             possible_moves = logic.get_possible_moves(self.root_state)
             move = random.choice(possible_moves)
             return move
-        elif (len(node.untried_moves) > 10):
-            depth = 4
-        else :
-            depth = 7
             
-        node.move = self.minimax(node, depth)
+        node.move = self.minimax(node)
         return node.move
         
-    def minimax(self, node, depth):    
+    def minimax(self, node):    
         alpha = -inf
         beta = inf
-        value, move = self.max_value(node, alpha, beta, depth)
+        value, move = self.min_value(node, alpha, beta)
         return move
     
-    def max_value(self, node, alpha, beta, depth):
+    def max_value(self, node, alpha, beta):
+        
         haveWinner, value, move = self.haveWinner(node)
         if (haveWinner):
             return value, move
@@ -113,7 +110,7 @@ class MiniMax(PlayerStrat):
         node.add_children()
         
         for child in node.children:
-            v2, a2 = self.min_value(child, alpha, beta, depth-1)
+            v2, a2 = self.min_value(child, alpha, beta)
             if v2 > v:
                 v, a1 = v2, a2  
                 alpha = max(alpha, v)
@@ -132,7 +129,7 @@ class MiniMax(PlayerStrat):
         node.add_children()
             
         for child in node.children:
-            v2, a2 = self.max_value(child, alpha, beta, depth-1)
+            v2, a2 = self.max_value(child, alpha, beta)
             if v2 < v:
                 v, a1 = v2, a2
                 beta = min(beta, v)
@@ -142,16 +139,16 @@ class MiniMax(PlayerStrat):
         return v, a1
     
     def haveWinner(self, node):
-        if (logic.is_game_over(logic.BLACK_PLAYER, node.state) == logic.BLACK_PLAYER) :
-            if (self.player != logic.BLACK_PLAYER):
-                return True, 200, node.move
-            else:
-                return True, -200, node.move            
-        elif (logic.is_game_over(logic.WHITE_PLAYER, node.state) == logic.WHITE_PLAYER) :
-            if (self.player != logic.WHITE_PLAYER):
-                return True, 200, node.move
-            else:
-                return True, -200, node.move   
+        otherPlayer = 0
+        if (self.player == logic.BLACK_PLAYER):
+            otherPlayer = logic.WHITE_PLAYER
+        else:
+            otherPlayer = logic.BLACK_PLAYER
+            
+        if (logic.is_game_over(self.player, node.state) == self.player) :
+            return True, 200, node.move        
+        elif (logic.is_game_over(otherPlayer, node.state) == otherPlayer) :
+            return True, -200, node.move   
         else :
             return False, 0, node.move
         
@@ -228,16 +225,16 @@ class Evaluate(PlayerStrat):
         return v, a1
     
     def haveWinner(self, node):
-        if (logic.is_game_over(logic.BLACK_PLAYER, node.state) == logic.BLACK_PLAYER) :
-            if (self.player != logic.BLACK_PLAYER):
-                return True, 200, node.move
-            else:
-                return True, -200, node.move            
-        elif (logic.is_game_over(logic.WHITE_PLAYER, node.state) == logic.WHITE_PLAYER) :
-            if (self.player != logic.WHITE_PLAYER):
-                return True, 200, node.move
-            else:
-                return True, -200, node.move   
+        otherPlayer = 0
+        if (self.player == logic.BLACK_PLAYER):
+            otherPlayer = logic.WHITE_PLAYER
+        else:
+            otherPlayer = logic.BLACK_PLAYER
+            
+        if (logic.is_game_over(self.player, node.state) == self.player) :
+            return True, 200, node.move        
+        elif (logic.is_game_over(otherPlayer, node.state) == otherPlayer) :
+            return True, -200, node.move   
         else :
             return False, 0, node.move
         
