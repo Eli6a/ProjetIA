@@ -118,7 +118,7 @@ class MiniMax(PlayerStrat):
                 return v, a1
         return v, a1
         
-    def min_value(self, node, alpha, beta, depth):
+    def min_value(self, node, alpha, beta):
         haveWinner, value, move = self.haveWinner(node)
         if (haveWinner):
             return value, move
