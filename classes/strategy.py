@@ -10,6 +10,7 @@ from rich.console import Console
 from rich.progress import Progress
 
 import classes.logic as logic
+import classes.graph as graph
 
 # When implementing a new strategy add it to the `str2strat`
 # dictionary at the end of the file
@@ -19,6 +20,11 @@ class PlayerStrat:
     def __init__(self, _board_state, player):
         self.root_state = _board_state
         self.player = player
+        
+        if (self.player == logic.BLACK_PLAYER):
+            self.otherPlayer = logic.WHITE_PLAYER
+        else:
+            self.otherPlayer = logic.BLACK_PLAYER
 
     def start(self):
         """
@@ -139,34 +145,39 @@ class MiniMax(PlayerStrat):
         return v, a1
     
     def haveWinner(self, node):
-        otherPlayer = 0
-        if (self.player == logic.BLACK_PLAYER):
-            otherPlayer = logic.WHITE_PLAYER
-        else:
-            otherPlayer = logic.BLACK_PLAYER
             
         if (logic.is_game_over(self.player, node.state) == self.player) :
             return True, 200, node.move        
-        elif (logic.is_game_over(otherPlayer, node.state) == otherPlayer) :
+        elif (logic.is_game_over(self.otherPlayer, node.state) == self.otherPlayer) :
             return True, -200, node.move   
         else :
             return False, 0, node.move
         
 class Evaluate(PlayerStrat):
     # Build here the class implementing the MiniMax strategy
+    
+    # ------ TEMPORAIRE ------
+    def test(self, board):
+        # Exemple d'utilisation
+        g = graph.Graph(board, self.otherPlayer)
+
+        for i in range(len(board)):
+            start_node = graph.Node(i, len(board[0])-1, 0)
+            end_node = graph.Node(i, len(board[0])-1, 0)
+            path = graph.astar(g, start_node, end_node)
+            print("Chemin A* :", path)
+    
+    # ------ TEMPORAIRE ------
+    
     def start(self):
+        self.test(self.root_state)
         node = Node(self.root_state, player=self.player)
         
         depth = 0
-        
-        if (len(node.untried_moves) > 14):
-            possible_moves = logic.get_possible_moves(self.root_state)
-            move = random.choice(possible_moves)
-            return move
-        elif (len(node.untried_moves) > 10):
-            depth = 4
-        else :
-            depth = 7
+        if (len(node.untried_moves) > 10):
+            self.maxDepth = 4
+        else:
+            self.maxDepth = 7
             
         v = -inf
         alpha = -inf
@@ -174,8 +185,7 @@ class Evaluate(PlayerStrat):
         node.move = self.minimax(node, depth)
         return node.move
         
-    def minimax(self, node, depth):
-            
+    def minimax(self, node, depth):  
         value, move = self.max_value(node, -inf, inf, depth)
         return move
     
@@ -184,7 +194,7 @@ class Evaluate(PlayerStrat):
         if (haveWinner):
             return value, move
             
-        if (depth == 0):
+        if (depth == self.maxDepth):
             return self.evaluate(node)
         
         v = -inf
@@ -193,7 +203,7 @@ class Evaluate(PlayerStrat):
         node.add_children()
         
         for child in node.children:
-            v2, a2 = self.min_value(child, alpha, beta, depth-1)
+            v2, a2 = self.min_value(child, alpha, beta, depth+1)
             if v2 > v:
                 v, a1 = v2, a2  
                 alpha = max(alpha, v)
@@ -206,16 +216,16 @@ class Evaluate(PlayerStrat):
         if (haveWinner):
             return value, move
             
-        if (depth == 0):
+        if (depth == self.maxDepth):
             return self.evaluate(node)
-         
+        
         v = +inf
         a1 = (-1, -1)
                 
         node.add_children()
             
         for child in node.children:
-            v2, a2 = self.max_value(child, alpha, beta, depth-1)
+            v2, a2 = self.max_value(child, alpha, beta, depth+1)
             if v2 < v:
                 v, a1 = v2, a2
                 beta = min(beta, v)
@@ -224,27 +234,54 @@ class Evaluate(PlayerStrat):
 
         return v, a1
     
-    def haveWinner(self, node):
-        otherPlayer = 0
-        if (self.player == logic.BLACK_PLAYER):
-            otherPlayer = logic.WHITE_PLAYER
-        else:
-            otherPlayer = logic.BLACK_PLAYER
-            
+    def haveWinner(self, node):            
         if (logic.is_game_over(self.player, node.state) == self.player) :
             return True, 200, node.move        
-        elif (logic.is_game_over(otherPlayer, node.state) == otherPlayer) :
+        elif (logic.is_game_over(self.otherPlayer, node.state) == self.otherPlayer) :
             return True, -200, node.move   
         else :
             return False, 0, node.move
         
     
     def evaluate(self, node):
-        one_third = len(node.state) // 3
-        if (node.move[0] <= one_third or node.move[0] >= len(node.state) - one_third):
-            return 1, node.move
+        
+        value = 0
+        
+        node.add_children()
+        
+        childOtherPlayer = 0
+        if node.player == self.player:
+            childOtherPlayer = self.player
         else:
-            return 9, node.move
+            childOtherPlayer = self.otherPlayer
+                        
+        for child in node.children:
+            haveWinner = 0
+            while haveWinner == 0 and len(logic.get_possible_moves(child.state)) > 0:
+                
+                move = random.choice(child.untried_moves)
+                child.untried_moves.remove(move)
+                child.state[move[0]][move[1]] = childOtherPlayer
+                
+                if (logic.is_game_over(child.player, child.state) == child.player) :
+                    haveWinner = 1
+                    break
+                
+                if (len(logic.get_possible_moves(child.state)) == 0):
+                    break
+                
+                move = random.choice(child.untried_moves)
+                child.untried_moves.remove(move)
+                child.state[move[0]][move[1]] = child.player
+                
+                if (logic.is_game_over(childOtherPlayer, child.state) == childOtherPlayer) :
+                    haveWinner = -1
+            
+            value += haveWinner  
+            
+        node.children.clear()              
+                
+        return value, node.move
 
 str2strat: dict[str, PlayerStrat] = {
         "human": None,
