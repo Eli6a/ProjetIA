@@ -160,11 +160,13 @@ class Evaluate(PlayerStrat):
     def test(self, board):
         # Exemple d'utilisation
         g = graph.Graph(board, self.otherPlayer)
+        g.displayGraph()
 
         for i in range(len(board)):
-            start_node = graph.Node(i, len(board[0])-1, 0)
+            start_node = graph.Node(i, 0, 0)
             end_node = graph.Node(i, len(board[0])-1, 0)
             path = graph.astar(g, start_node, end_node)
+            print(start_node.position, " ", end_node.position, "\n")
             print("Chemin A* :", path)
     
     # ------ TEMPORAIRE ------

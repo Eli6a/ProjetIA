@@ -38,6 +38,12 @@ class Graph:
     def add_edge(self, node1, node2, weight=1):
         if node1.position in self.nodes and node2.position in self.nodes:
             self.nodes[node1.position].append((node2, weight))
+            self.nodes[node2.position].append((node1, weight))
+            
+    def displayGraph(self) -> str:
+        for node, neighbors in self.nodes.items():
+            print(f"{node}: {neighbors}")
+
 
 class Node:
     def __init__(self, x, y, player):
@@ -47,6 +53,13 @@ class Node:
         self.h_cost = 0  
         self.f_cost = 0 
         self.parent = None
+        
+    def __lt__(self, other):
+        return self.f_cost < other.f_cost
+    
+    def __repr__(self):
+        return f"Node({self.position}, {self.player})"
+
 
 def astar(graph, start, end):
     open_set = []
@@ -70,7 +83,7 @@ def astar(graph, start, end):
         closed_set.add(current_node.position)
 
         neighbors = graph.nodes[current_node.position]
-
+        print(neighbors)
         for neighbor, weight in neighbors:
             neighbor_node = Node(neighbor[0], neighbor[1], weight)
             neighbor_node.g_cost = current_node.g_cost + weight
