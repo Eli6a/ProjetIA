@@ -44,7 +44,6 @@ class Graph:
         for node, neighbors in self.nodes.items():
             print(f"{node}: {neighbors}")
 
-
 class Node:
     def __init__(self, x, y, player):
         self.position = (x, y)
@@ -83,9 +82,9 @@ def astar(graph, start, end):
         closed_set.add(current_node.position)
 
         neighbors = graph.nodes[current_node.position]
-        print(neighbors)
-        for neighbor, weight in neighbors:
-            neighbor_node = Node(neighbor[0], neighbor[1], weight)
+        for neighbor_data in neighbors:
+            neighbor, weight = neighbor_data[0], neighbor_data[1]
+            neighbor_node = Node(neighbor.position[0], neighbor.position[1], neighbor.player)
             neighbor_node.g_cost = current_node.g_cost + weight
             neighbor_node.h_cost = manhattan_distance(neighbor_node, end_node)
             neighbor_node.f_cost = neighbor_node.g_cost + neighbor_node.h_cost
