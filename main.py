@@ -44,7 +44,7 @@ def arguments():
     parser = argparse.ArgumentParser(description='Runs a game of Hex.')
 
     parser.add_argument(
-        '--size', default=4, type=int,
+        '--size', default=5, type=int,
         help='Size of the board (Default: 7)'
     )
 

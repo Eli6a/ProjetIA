@@ -2,7 +2,7 @@ import heapq
 
 class Graph:
     """Représentation du plateau par une liste adjacence d'un graphe non orienté"""
-    def __init__(self, board, otherPlayer):
+    def __init__(self, board, player, otherPlayer):
         self.nodes = {}
         for row in range(len(board)):
             for col in range(len(board[0])):
@@ -23,7 +23,10 @@ class Graph:
                     if 0 <= neighbor[0] < len(board) and 0 <= neighbor[1] < len(board[0]):
                         # Si la case voisine n'est pas occupée par l'autre joueur, on ajoute un arc
                         if (board[neighbor[0]][neighbor[1]] != otherPlayer):
-                            self.add_edge(node, Node(neighbor[0], neighbor[1], board[neighbor[0]][neighbor[1]]))
+                            if (board[neighbor[0]][neighbor[1]] == player):
+                                self.add_edge(node, Node(neighbor[0], neighbor[1], board[neighbor[0]][neighbor[1]]), 2)
+                            else:
+                                self.add_edge(node, Node(neighbor[0], neighbor[1], board[neighbor[0]][neighbor[1]]))
                                                 
     def add_node(self, node):
         if node.position not in self.nodes:
@@ -39,6 +42,13 @@ class Graph:
         if node1.position in self.nodes and node2.position in self.nodes:
             self.nodes[node1.position].append((node2, weight))
             self.nodes[node2.position].append((node1, weight))
+            
+    def find_edge_weight(self, node1, node2):
+        for neighbor, weight in self.nodes[node1.position]:
+            if neighbor.position == node2.position:
+                return weight
+        return float('inf')  
+            
             
     def displayGraph(self) -> str:
         for node, neighbors in self.nodes.items():
@@ -103,4 +113,11 @@ def astar(graph, start, end):
 def manhattan_distance(node1, node2):
     return abs(node1.position[0] - node2.position[0]) + abs(node1.position[1] - node2.position[1])
 
-
+def path_cost(path, graph):
+    cost = 0
+    for i in range(len(path) - 1):
+        current_node = graph.nodes[path[i]][0][0]
+        next_node = graph.nodes[path[i + 1]][0][0]
+        edge_weight = graph.find_edge_weight(current_node, next_node)
+        cost += edge_weight
+    return cost
