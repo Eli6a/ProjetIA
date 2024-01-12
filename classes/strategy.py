@@ -272,11 +272,14 @@ class Evaluate(PlayerStrat):
                     
                     if (self.root_state[row][col] == 0):
                         # donne une valeur forte au milieu du plateau, et plus on s'éloigne, plus la valeur diminue
-                        valueMatrix[row][col] += (matrixLength - abs(middle - row) - abs(middle - col))/2
+                        valueMatrix[row][col] += (matrixLength - abs(middle - row) - abs(middle - col)) / 2
                         
                         # donne une valeur forte sur les lignes horizontales centrales
-                        if (self.player == logic.BLACK_PLAYER):
-                            valueMatrix[row][col] += (matrixLength - abs(middle - row))/2
+                        valueMatrix[row][col] += (matrixLength - abs(middle - row)) / 2
+                        
+                        # donne une valeur plus forte sur la diagonale bas-gauche haut-droite   
+                        distanceDiagonale = abs((row + col) - (matrixLength - 1))
+                        valueMatrix[row][col] += (matrixLength - distanceDiagonale) / 4
                             
                     elif (self.root_state[row][col] == self.otherPlayer):
                         otherOnSameRow += 1
@@ -302,13 +305,14 @@ class Evaluate(PlayerStrat):
                     
                     if (self.root_state[row][col] == 0):
                         # donne une valeur forte au milieu du plateau, et plus on s'éloigne, plus la valeur diminue
-                        valueMatrix[row][col] += (matrixLength - abs(middle - row) - abs(middle - col))/2
+                        valueMatrix[row][col] += (matrixLength - abs(middle - row) - abs(middle - col)) / 2
                         
-                        # donne une valeur forte sur les lignes horizontales (ou verticales) centrales
-                        if (self.player == logic.BLACK_PLAYER):
-                            valueMatrix[row][col] += (matrixLength - abs(middle - row))/2
-                        else:
-                            valueMatrix[row][col] += (matrixLength - abs(middle - col))/2
+                        # donne une valeur forte sur les lignes verticales centrales
+                        valueMatrix[row][col] += (matrixLength - abs(middle - col)) / 2
+                            
+                        # donne une valeur plus forte sur la diagonale bas-gauche haut-droite   
+                        distanceDiagonale = abs((row + col) - (matrixLength - 1))
+                        valueMatrix[row][col] += (matrixLength - distanceDiagonale) / 4       
                             
                     elif (self.root_state[row][col] == self.otherPlayer):
                         otherOnSameCol += 1
@@ -322,7 +326,7 @@ class Evaluate(PlayerStrat):
                     if (valueMatrix[row][col] > bestValue):
                         bestValue = valueMatrix[row][col]
                         bestMove = (row, col)                
-                                          
+             
         return bestValue, bestMove    
     
 class ShortPath(PlayerStrat):
