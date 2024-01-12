@@ -9,6 +9,7 @@ from rich.progress import track
 from rich.console import Console
 from rich.progress import Progress
 
+import time
 import classes.logic as logic
 import classes.graph as graph
 
@@ -95,7 +96,10 @@ class MiniMax(PlayerStrat):
             move = random.choice(possible_moves)
             return move
             
+        startTime = time.time()
         node.move = self.minimax(node)
+        self.displayTime(startTime)
+        
         return node.move
         
     def minimax(self, node):    
@@ -152,6 +156,21 @@ class MiniMax(PlayerStrat):
         else :
             return False, 0, node.move
         
+    def displayTime(self, startTime):
+        timeElapsed = time.time() - startTime
+        hours, rem = divmod(timeElapsed, 3600)
+        minutes, seconds = divmod(rem, 60)
+        
+        timeString = ""
+        if (hours > 0):
+            timeString += "{:0>2}h".format(int(hours)) + " "
+        if (minutes > 0):
+            timeString += "{:0>2}m".format(int(minutes)) + " "
+        if (seconds > 0):
+            timeString += "{:05.2f}s".format(seconds)
+
+        print(timeString)
+        
 class Evaluate(PlayerStrat):
     """Joue d'abord au centre, puis essaie de faire une ligne (verticale ou horizontale en fonction de la couleur)"""
     # Build here the class implementing the MiniMax strategy
@@ -174,7 +193,11 @@ class Evaluate(PlayerStrat):
         v = -inf
         alpha = -inf
         beta = inf
+        
+        startTime = time.time()
         node.move = self.minimax(node, depth)
+        self.displayTime(startTime)
+        
         return node.move
         
     def minimax(self, node, depth):  
@@ -335,7 +358,22 @@ class Evaluate(PlayerStrat):
                         bestValue = valueMatrix[row][col]
                         bestMove = (row, col)                
              
-        return bestValue, bestMove    
+        return bestValue, bestMove   
+    
+    def displayTime(self, startTime):
+        timeElapsed = time.time() - startTime
+        hours, rem = divmod(timeElapsed, 3600)
+        minutes, seconds = divmod(rem, 60)
+        
+        timeString = ""
+        if (hours > 0):
+            timeString += "{:0>2}h".format(int(hours)) + " "
+        if (minutes > 0):
+            timeString += "{:0>2}m".format(int(minutes)) + " "
+        if (seconds > 0):
+            timeString += "{:05.2f}s".format(seconds)
+
+        print(timeString)
     
 class ShortPath(PlayerStrat):
     """Essaie de faire le chemin le plus court entre les bords du plateau
@@ -354,7 +392,11 @@ class ShortPath(PlayerStrat):
         v = -inf
         alpha = -inf
         beta = inf
+        
+        startTime = time.time()
         node.move = self.minimax(node, depth)
+        self.displayTime(startTime)
+        
         return node.move
         
     def minimax(self, node, depth):  
@@ -564,6 +606,21 @@ class ShortPath(PlayerStrat):
         
         return abs(50 - costMin), move
     
+    def displayTime(self, startTime):
+        timeElapsed = time.time() - startTime
+        hours, rem = divmod(timeElapsed, 3600)
+        minutes, seconds = divmod(rem, 60)
+        
+        timeString = ""
+        if (hours > 0):
+            timeString += "{:0>2}h".format(int(hours)) + " "
+        if (minutes > 0):
+            timeString += "{:0>2}m".format(int(minutes)) + " "
+        if (seconds > 0):
+            timeString += "{:05.2f}s".format(seconds)
+
+        print(timeString)
+    
 class MonteCarlo(PlayerStrat):
     # Build here the class implementing the MiniMax strategy
     def start(self):
@@ -585,7 +642,11 @@ class MonteCarlo(PlayerStrat):
         v = -inf
         alpha = -inf
         beta = inf
+           
+        startTime = time.time()
         node.move = self.minimax(node, depth)
+        self.displayTime(startTime)
+
         return node.move
         
     def minimax(self, node, depth):  
@@ -694,7 +755,22 @@ class MonteCarlo(PlayerStrat):
         if (player == logic.BLACK_PLAYER):
             return logic.WHITE_PLAYER
         else:
-            return logic.BLACK_PLAYER     
+            return logic.BLACK_PLAYER  
+        
+    def displayTime(self, startTime):
+        timeElapsed = time.time() - startTime
+        hours, rem = divmod(timeElapsed, 3600)
+        minutes, seconds = divmod(rem, 60)
+        
+        timeString = ""
+        if (hours > 0):
+            timeString += "{:0>2}h".format(int(hours)) + " "
+        if (minutes > 0):
+            timeString += "{:0>2}m".format(int(minutes)) + " "
+        if (seconds > 0):
+            timeString += "{:05.2f}s".format(seconds)
+
+        print(timeString)   
         
 str2strat: dict[str, PlayerStrat] = {
         "human": None,
