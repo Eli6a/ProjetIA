@@ -1,0 +1,11 @@
+IA1,IA2,Board Size,%win
+random,shortpath,4,0.0
+random,shortpath,4,0.0
+shortpath,random,4,100.0
+evaluate,random,4,100.0
+random,random,4,40.0
+random,evaluate,4,0.0
+shortpath,evaluate,4,60.0
+evaluate,shortpath,4,0.0
+evaluate,evaluate,4,60.0
+shortpath,shortpath,4,0.0

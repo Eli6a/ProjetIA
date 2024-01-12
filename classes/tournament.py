@@ -89,13 +89,19 @@ class Tournament:
         print(scores)
         print(self.STRAT[0], "|", self.STRAT[1], "| board :", self.BOARD_SIZE, "|", (scores [0] / (scores [0] + scores[1])) * 100, "% win")
 
-        with open('heatmap.csv', 'w', newline='') as file:
+        csv_filename = 'heatmap.csv'
+        write_header = not os.path.exists(csv_filename) or os.stat(csv_filename).st_size == 0
+
+        with open(csv_filename, 'a', newline='') as file:
             writer = csv.writer(file)
             
-            writer.writerow(['IA1', 'IA2', 'Board Size', '%win'])
+            if write_header:
+                writer.writerow(['IA1', 'IA2', 'Board Size', '%win'])
+
             
             writer.writerow([self.STRAT[0], self.STRAT[1], self.BOARD_SIZE, (scores [0] / (scores [0] + scores[1])) * 100])
 
+        self.heatmap()
         
         
     def heatmap(self):
