@@ -24,10 +24,10 @@ class Graph:
                         # Si la case voisine n'est pas occupée par l'autre joueur, on ajoute un arc
                         if (board[neighbor[0]][neighbor[1]] != otherPlayer):
                             if (board[neighbor[0]][neighbor[1]] == player):
-                                self.add_edge(node, Node(neighbor[0], neighbor[1], board[neighbor[0]][neighbor[1]]), 2)
+                                self.add_edge(node, Node(neighbor[0], neighbor[1], board[neighbor[0]][neighbor[1]]), 0.5)
                             else:
                                 self.add_edge(node, Node(neighbor[0], neighbor[1], board[neighbor[0]][neighbor[1]]))
-                                                
+                                                                                
     def add_node(self, node):
         if node.position not in self.nodes:
             self.nodes[node.position] = []
