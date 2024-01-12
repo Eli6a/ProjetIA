@@ -306,7 +306,7 @@ class Evaluate(PlayerStrat):
                         valueMatrix[row][col] += (matrixLength - abs(middle - row) - abs(middle - col)) / 2
                         
                         # donne une valeur forte sur les lignes horizontales centrales
-                        valueMatrix[row][col] += (matrixLength - abs(middle - row)) / 2
+                        valueMatrix[row][col] += (matrixLength - abs(middle - row))
                         
                         # donne une valeur plus forte sur la diagonale bas-gauche haut-droite   
                         distanceDiagonale = abs((row + col) - (matrixLength - 1))
@@ -339,7 +339,7 @@ class Evaluate(PlayerStrat):
                         valueMatrix[row][col] += (matrixLength - abs(middle - row) - abs(middle - col)) / 2
                         
                         # donne une valeur forte sur les lignes verticales centrales
-                        valueMatrix[row][col] += (matrixLength - abs(middle - col)) / 2
+                        valueMatrix[row][col] += (matrixLength - abs(middle - col))
                             
                         # donne une valeur plus forte sur la diagonale bas-gauche haut-droite   
                         distanceDiagonale = abs((row + col) - (matrixLength - 1))
