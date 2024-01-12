@@ -1,6 +1,10 @@
 import os
 import pickle
+import csv
 import logging
+import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd
 from rich import print
 from rich.logging import RichHandler
 
@@ -84,14 +88,21 @@ class Tournament:
         # log.info("Design your own evaluation measure!")
         print(scores)
         print(self.STRAT[0], "|", self.STRAT[1], "| board :", self.BOARD_SIZE, "|", (scores [0] / (scores [0] + scores[1])) * 100, "% win")
+
+        with open('heatmap.csv', 'w', newline='') as file:
+            writer = csv.writer(file)
+            
+            writer.writerow(['IA1', 'IA2', 'Board Size', '%win'])
+            
+            writer.writerow([self.STRAT[0], self.STRAT[1], self.BOARD_SIZE, (scores [0] / (scores [0] + scores[1])) * 100])
+
         
         
     def heatmap(self):
-        raise NotImplementedError
-        # df = read_csv("heatmap.csv")
-        # matrix = df.pivot_table(values="%win",
-        #                         index = "IA1",
-        #                         columns = "IA2")
-        # import seaborn as sns
-        # sns.heatmap(matrix)
-        # plt.show()
+        df = pd.read_csv("heatmap.csv")
+        matrix = df.pivot_table(values="%win",
+                                index = "IA1",
+                                columns = "IA2")
+        
+        sns.heatmap(matrix)
+        plt.show()
