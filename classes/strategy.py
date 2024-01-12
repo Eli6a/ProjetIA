@@ -105,7 +105,7 @@ class MiniMax(PlayerStrat):
     def minimax(self, node):    
         alpha = -inf
         beta = inf
-        value, move = self.min_value(node, alpha, beta)
+        value, move = self.max_value(node, alpha, beta)
         return move
     
     def max_value(self, node, alpha, beta):
@@ -260,7 +260,7 @@ class Evaluate(PlayerStrat):
         if (logic.is_game_over(self.player, node.state) == self.player) :
             return True, 200, node.move        
         elif (logic.is_game_over(self.otherPlayer, node.state) == self.otherPlayer) :
-            return True, 200, node.move   
+            return True, -200, node.move   
         else :
             return False, 0, node.move   
              
@@ -401,6 +401,8 @@ class ShortPath(PlayerStrat):
         
     def minimax(self, node, depth):  
         value, move = self.max_value(node, -inf, inf, depth)
+        if (move not in logic.get_possible_moves(self.root_state)):
+            return random.choice(logic.get_possible_moves(self.root_state)) 
         return move
     
     def max_value(self, node, alpha, beta, depth):
@@ -456,7 +458,7 @@ class ShortPath(PlayerStrat):
         if (logic.is_game_over(self.player, node.state) == self.player) :
             return True, 200, node.move        
         elif (logic.is_game_over(self.otherPlayer, node.state) == self.otherPlayer) :
-            return True, 200, node.move   
+            return True, -200, node.move   
         else :
             return False, 0, node.move
              
@@ -498,9 +500,9 @@ class ShortPath(PlayerStrat):
             
             sorted_indices = []
             if (all(element == 0 for element in ownOnSameRows)):
-                sorted_indices = [1, 0, len(self.root_state)-2, len(self.root_state)-1]
+                sorted_indices = [1, 0, len(self.root_state)-1]
             else:
-                sorted_indices = sorted(range(len(ownOnSameRows)), key=lambda i: ownOnSameRows[i], reverse=True)[:4]
+                sorted_indices = sorted(range(len(ownOnSameRows)), key=lambda i: ownOnSameRows[i], reverse=True)[:3]
             
             for start in sorted_indices:
                 if (not any(couple == (start, 0) for couple in leftEdge)):
@@ -520,7 +522,7 @@ class ShortPath(PlayerStrat):
                         shortestPath = path
             
             # si ne trouve pas un chemin sur les lignes les plus jouées, on prend un chemin aléatoire           
-            if (shortestPath == []):
+            if (shortestPath == [] or shortestPath == None):
                 start = random.choice(leftEdge)
                 end = random.choice(rightEdge)
                 start_node = graph.Node(start[0], 0, 0)
@@ -546,9 +548,9 @@ class ShortPath(PlayerStrat):
             
             sorted_indices = []
             if (all(element == 0 for element in ownOnSameCols)):
-                sorted_indices = [1, 0, len(self.root_state)-2, len(self.root_state)-1]
+                sorted_indices = [1, 0, len(self.root_state)-1]
             else:
-                sorted_indices = sorted(range(len(ownOnSameCols)), key=lambda i: ownOnSameCols[i], reverse=True)[:4]
+                sorted_indices = sorted(range(len(ownOnSameCols)), key=lambda i: ownOnSameCols[i], reverse=True)[:3]
             
             for start in sorted_indices:
                 if (not any(couple == (0, start) for couple in upEdge)):
@@ -568,7 +570,7 @@ class ShortPath(PlayerStrat):
                         shortestPath = path
                         
             # si ne trouve pas un chemin sur les lignes les plus jouées, on prend un chemin aléatoire           
-            if (shortestPath == []):
+            if (shortestPath == [] or shortestPath == None):
                 start = random.choice(upEdge)
                 end = random.choice(bottomEdge)
                 start_node = graph.Node(0, start[1], 0)
@@ -581,7 +583,7 @@ class ShortPath(PlayerStrat):
                         shortestPath = path
 
         move = (-1, -1)
-        if (shortestPath == []):
+        if (shortestPath == [] or shortestPath == None):
             return -10, move  
         elif (len(shortestPath) == 1):
             if (logic.is_node_free(shortestPath[0], self.root_state)):
@@ -709,7 +711,7 @@ class MonteCarlo(PlayerStrat):
         if (logic.is_game_over(self.player, node.state) == self.player) :
             return True, 200, node.move        
         elif (logic.is_game_over(self.otherPlayer, node.state) == self.otherPlayer) :
-            return True, 200, node.move   
+            return True, -200, node.move   
         else :
             return False, 0, node.move    
         
